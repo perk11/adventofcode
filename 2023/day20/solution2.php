@@ -43,7 +43,7 @@ foreach (['input'] as $fileName) {
             $conjunctions[$module->name] = $module;
         }
     }
-    $modules['rx'] = new FinalModule();
+    $modules['rx'] = new NullModule();
 
     foreach ($modules as $module) {
         foreach ($module->destinations as $destination) {
@@ -60,13 +60,8 @@ foreach (['input'] as $fileName) {
     $buttonPulse->type = PulseType::Low;
     $buttonPulse->destination = 'broadcaster';
 
-    $abort = false;
     for ($i = 1; ; $i++) {
-        if ($abort) {
-            echo "$i total presses required";
-            break;
-        }
-        if ($i % 1000 === 0) {
+        if ($i % 5000 === 0) {
             echo "Button press $i\n";
             echo "High Cycle Lengths:\n";
             foreach (Conjunction::$highCycleLengths as $name => $highCycleLength) {
@@ -88,9 +83,6 @@ foreach (['input'] as $fileName) {
             $pulseQueue->enqueue($pulse);
         }
         while (!$pulseQueue->isEmpty()) {
-            if ($abort) {
-                break;
-            }
             $pulse = $pulseQueue->dequeue();
             $destination = $modules[$pulse->destination];
             $newPulses = $destination->handlePulse($pulse, $i);
@@ -134,20 +126,6 @@ class NullModule extends Module
 
     public function handlePulse(Pulse $pulse, int $i): array
     {
-        return [];
-    }
-}
-
-class FinalModule extends NullModule
-{
-    public function handlePulse(Pulse $pulse, int $i): array
-    {
-        global $abort;
-        if ($pulse->type === PulseType::Low) {
-            echo "Abort!\n";
-            $abort = true;
-        }
-
         return [];
     }
 }
