@@ -1,7 +1,6 @@
 <?php
 
-ini_set('memory_limit', '60G');
-//gc_disable();
+//this takes 2 hours to complete
 
 enum TileType: string
 {
@@ -12,7 +11,6 @@ enum TileType: string
 foreach (['testInput', 'input'] as $fileName) {
     echo PHP_EOL . $fileName . PHP_EOL . PHP_EOL;
     $input = fopen($fileName, 'rb');
-
 
     $map = new Map();
     $y = 0;
@@ -59,24 +57,21 @@ foreach (['testInput', 'input'] as $fileName) {
 
     $i = 0;
     $timeBefore = microtime(true);
-    $queue = new SplStack();
-    $queue[] = $path;
-    while (!$queue->isEmpty()) {
-        $currentPath = $queue->pop();
+    $stack = new SplStack();
+    $stack[] = $path;
+    while (!$stack->isEmpty()) {
+        $currentPath = $stack->pop();
         if ($i % 100000 === 0) {
-            echo $i . '/' . $queue->count() . '/' . $max . '/' . (microtime(true) - $timeBefore) . "s\n";
+            echo $i . '/' . $stack->count() . '/' . $max . '/' . (microtime(true) - $timeBefore) . "s\n";
             $timeBefore = microtime(true);
-//            gc_collect_cycles();
         }
         if ($currentPath->hasEnded()) {
             $max = max($max, $currentPath->length());
         } else {
             foreach ($currentPath->nextTilePaths($map) as $path) {
-                $queue[] = $path;
+                $stack[] = $path;
             }
         }
-//        unset($currentPath);
-
 
         $i++;
     }
@@ -106,6 +101,7 @@ class Path
             return [];
         }
         $clonedPath = clone $this;
+        //this can be further optimized by avoiding traversing the corridors every time
         while (count($neighbourTiles) === 1) {
             $clonedPath->visitTile($neighbourTiles[0]);
             if ($clonedPath->hasEnded()) {
@@ -197,6 +193,7 @@ class Tile
             $neighbours[] = [$this->x, $this->y - 1];
         }
         foreach ($neighbours as $neighbour) {
+            //not using array unpacking or list() because it is slower and this is on the hot path
             $x = $neighbour[0];
             $y = $neighbour[1];
             if (isset($path->visitedTiles[$y][$x])) {
