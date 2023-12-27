@@ -143,7 +143,7 @@ foreach (['testInput', 'input'] as $fileName) {
     echo "Starting pretending\n";
     $total = 0;
     foreach ($bricks as $brick) {
-        if ($brick->countBricksThatWouldFall($fallMap)) {
+        if ($brick->isSafeToDisintegrate($fallMap)) {
             $total++;
         } else {
             echo "Therefore $brick can not be disintegrated\n";
