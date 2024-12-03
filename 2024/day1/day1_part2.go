@@ -21,8 +21,8 @@ func main() {
 		list2 := make([]int, len(lines))
 		for index, line := range lines {
 			split := strings.Fields(line)
-			list1[index], _ = strconv.Atoi(strings.Trim(split[0], " "))
-			list2[index], _ = strconv.Atoi(strings.Trim(split[1], " "))
+			list1[index], _ = strconv.Atoi(split[0])
+			list2[index], _ = strconv.Atoi(split[1])
 		}
 
 		var similarityScore int = 0
