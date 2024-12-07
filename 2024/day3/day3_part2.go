@@ -91,7 +91,7 @@ func tryReadStartingFromByte(fileContents []byte, readStartIndex int, PREFIX str
 		if err == nil {
 			secondNumberString += currentByteString
 		} else {
-			//found something that doesn't convert to int before encountering a comma
+			//found something that doesn't convert to int before encountering a closing brace
 			return nil, nil
 		}
 	}
