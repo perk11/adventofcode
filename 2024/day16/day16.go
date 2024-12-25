@@ -140,14 +140,15 @@ func findNextNode(visitedNodes map[int]bool, nodeCosts [][][4]int) ReindeerPosit
 	for y := 0; y < len(raceTrack); y++ {
 		for x := 0; x < len(raceTrack[y]); x++ {
 			for direction := range 4 {
+				if nodeCosts[y][x][direction] >= minCost {
+					continue
+				}
 				_, ok := visitedNodes[reindeerPositionKey(x, y, direction)]
 				if ok {
 					continue
 				}
-				if nodeCosts[y][x][direction] < minCost {
-					minCost = nodeCosts[y][x][direction]
-					currentPosition = ReindeerPosition{Coordinates{x, y}, Direction(direction)}
-				}
+				minCost = nodeCosts[y][x][direction]
+				currentPosition = ReindeerPosition{Coordinates{x, y}, Direction(direction)}
 			}
 		}
 	}
