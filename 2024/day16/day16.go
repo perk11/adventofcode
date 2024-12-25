@@ -102,7 +102,13 @@ func main() {
 				}
 			}
 		}
-		visitedNodes := make(map[int]bool)
+		visitedNodes := make([][][4]bool, len(raceTrack))
+		for y := 0; y < len(raceTrack); y++ {
+			visitedNodes[y] = make([][4]bool, len(raceTrack[y]))
+			for x := 0; x < len(raceTrack[y]); x++ {
+				visitedNodes[y][x] = [4]bool{false, false, false, false}
+			}
+		}
 		nodeCosts[startPosition.coordinates.y][startPosition.coordinates.x][startPosition.direction] = 0
 		currentPosition := startPosition
 		i := 0
@@ -118,7 +124,7 @@ func main() {
 			}
 			i++
 
-			visitedNodes[reindeerPositionKey(currentPosition.coordinates.x, currentPosition.coordinates.y, int(currentPosition.direction))] = true
+			visitedNodes[currentPosition.coordinates.y][currentPosition.coordinates.x][currentPosition.direction] = true
 			currentPosition = findNextNode(visitedNodes, nodeCosts)
 			if currentPosition.tile() == end {
 				break dijkstraLoop
@@ -134,7 +140,7 @@ func main() {
 	}
 }
 
-func findNextNode(visitedNodes map[int]bool, nodeCosts [][][4]int) ReindeerPosition {
+func findNextNode(visitedNodes [][][4]bool, nodeCosts [][][4]int) ReindeerPosition {
 	var currentPosition ReindeerPosition
 	minCost := math.MaxInt
 	for y := 0; y < len(raceTrack); y++ {
@@ -143,10 +149,10 @@ func findNextNode(visitedNodes map[int]bool, nodeCosts [][][4]int) ReindeerPosit
 				if nodeCosts[y][x][direction] >= minCost {
 					continue
 				}
-				_, ok := visitedNodes[reindeerPositionKey(x, y, direction)]
-				if ok {
+				if visitedNodes[y][x][direction] {
 					continue
 				}
+
 				minCost = nodeCosts[y][x][direction]
 				currentPosition = ReindeerPosition{Coordinates{x, y}, Direction(direction)}
 			}
